@@ -7,9 +7,93 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Slider } from "@/components/ui/slider";
 import { toast } from "sonner";
 import { obfuscateCode, generateTampermonkeyHeader, type ObfuscationMethod } from "@/lib/obfuscator";
-import { Copy, Shield, Code, Zap, Lock, FileCode, Wand2 } from "lucide-react";
+import { Copy, Shield, Code, Zap, Lock, FileCode, Wand2, Settings2, ChevronDown } from "lucide-react";
+
+interface ProtectionOptions {
+  booleanLiteralReplacement: boolean;
+  booleanRandomize: boolean;
+  integerLiteralReplacement: boolean;
+  integerRandomize: boolean;
+  integerRadix: 'none' | 'binary' | 'decimal' | 'hexadecimal' | 'octal';
+  integerLower: number;
+  integerUpper: number;
+  debuggerRemoval: boolean;
+  stringExtraction: boolean;
+  propertyIndirection: boolean;
+  localNameMangling: boolean;
+  manglingType: 'sequential' | 'hexadecimal' | 'base52' | 'base62' | 'runic' | 'glagolitic' | 'tifinagh';
+  controlFlowProtection: boolean;
+  controlFlowRandomize: boolean;
+  constantArgumentObfuscation: boolean;
+  domainLock: boolean;
+  domainPattern: string;
+  domainErrorScript: string;
+  functionReordering: boolean;
+  functionRandomize: boolean;
+  propertySparsing: boolean;
+  variableGrouping: boolean;
+  expressionSequence: boolean;
+  selfDefending: boolean;
+  selfDefendingLevel: number;
+  selfDefendingErrorScript: string;
+  dateLock: boolean;
+  startDate: string;
+  endDate: string;
+  dateErrorScript: string;
+  consoleCloaking: boolean;
+  consoleCloakingExclude: string;
+  devToolsBlocking: boolean;
+  devToolsPatience: number;
+  globalObjectHiding: boolean;
+  globalUsePredefined: boolean;
+  globalInclude: string;
+  globalExclude: string;
+}
+
+const defaultProtectionOptions: ProtectionOptions = {
+  booleanLiteralReplacement: false,
+  booleanRandomize: false,
+  integerLiteralReplacement: false,
+  integerRandomize: false,
+  integerRadix: 'none',
+  integerLower: 0,
+  integerUpper: 100,
+  debuggerRemoval: false,
+  stringExtraction: false,
+  propertyIndirection: false,
+  localNameMangling: false,
+  manglingType: 'sequential',
+  controlFlowProtection: false,
+  controlFlowRandomize: false,
+  constantArgumentObfuscation: false,
+  domainLock: false,
+  domainPattern: '',
+  domainErrorScript: '',
+  functionReordering: false,
+  functionRandomize: false,
+  propertySparsing: false,
+  variableGrouping: false,
+  expressionSequence: false,
+  selfDefending: false,
+  selfDefendingLevel: 1,
+  selfDefendingErrorScript: '',
+  dateLock: false,
+  startDate: '',
+  endDate: '',
+  dateErrorScript: '',
+  consoleCloaking: false,
+  consoleCloakingExclude: '',
+  devToolsBlocking: false,
+  devToolsPatience: 5,
+  globalObjectHiding: false,
+  globalUsePredefined: false,
+  globalInclude: '',
+  globalExclude: '',
+};
 
 const Index = () => {
   const [inputCode, setInputCode] = useState("");
@@ -19,6 +103,11 @@ const Index = () => {
   const [scriptName, setScriptName] = useState("My Script");
   const [scriptDescription, setScriptDescription] = useState("A Tampermonkey script");
   const [matchPattern, setMatchPattern] = useState("*://*/*");
+  const [protectionOptions, setProtectionOptions] = useState<ProtectionOptions>(defaultProtectionOptions);
+
+  const updateProtection = <K extends keyof ProtectionOptions>(key: K, value: ProtectionOptions[K]) => {
+    setProtectionOptions(prev => ({ ...prev, [key]: value }));
+  };
 
   const handleObfuscate = () => {
     if (!inputCode.trim()) {
@@ -264,6 +353,454 @@ function myFunction() {
                 Xóa tất cả
               </Button>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Protection Options */}
+        <Card className="mt-6 bg-card/80 backdrop-blur border-border/50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-foreground">
+              <Settings2 className="w-5 h-5 text-primary" />
+              Tùy chọn bảo vệ
+            </CardTitle>
+            <CardDescription>Cấu hình các tùy chọn bảo vệ nâng cao</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Accordion type="multiple" className="w-full space-y-2">
+              {/* Boolean Literal Replacement */}
+              <AccordionItem value="boolean" className="border border-border/50 rounded-lg px-4">
+                <AccordionTrigger className="hover:no-underline">
+                  <div className="flex items-center justify-between w-full pr-4">
+                    <span>Thay thế Boolean Literal</span>
+                    <Switch
+                      checked={protectionOptions.booleanLiteralReplacement}
+                      onCheckedChange={(v) => updateProtection('booleanLiteralReplacement', v)}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="space-y-3 pt-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm text-muted-foreground">Ngẫu nhiên hóa</Label>
+                    <Switch
+                      checked={protectionOptions.booleanRandomize}
+                      onCheckedChange={(v) => updateProtection('booleanRandomize', v)}
+                    />
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+
+              {/* Integer Literal Replacement */}
+              <AccordionItem value="integer" className="border border-border/50 rounded-lg px-4">
+                <AccordionTrigger className="hover:no-underline">
+                  <div className="flex items-center justify-between w-full pr-4">
+                    <span>Thay thế Integer Literal</span>
+                    <Switch
+                      checked={protectionOptions.integerLiteralReplacement}
+                      onCheckedChange={(v) => updateProtection('integerLiteralReplacement', v)}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="space-y-4 pt-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm text-muted-foreground">Ngẫu nhiên hóa</Label>
+                    <Switch
+                      checked={protectionOptions.integerRandomize}
+                      onCheckedChange={(v) => updateProtection('integerRandomize', v)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-sm text-muted-foreground">Cơ số (Radix)</Label>
+                    <Select value={protectionOptions.integerRadix} onValueChange={(v: any) => updateProtection('integerRadix', v)}>
+                      <SelectTrigger className="bg-background/50">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">Không</SelectItem>
+                        <SelectItem value="binary">Nhị phân (Binary)</SelectItem>
+                        <SelectItem value="decimal">Thập phân (Decimal)</SelectItem>
+                        <SelectItem value="hexadecimal">Thập lục phân (Hexadecimal)</SelectItem>
+                        <SelectItem value="octal">Bát phân (Octal)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-sm text-muted-foreground">Giá trị thấp</Label>
+                      <Input
+                        type="number"
+                        value={protectionOptions.integerLower}
+                        onChange={(e) => updateProtection('integerLower', parseInt(e.target.value) || 0)}
+                        className="bg-background/50"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-sm text-muted-foreground">Giá trị cao</Label>
+                      <Input
+                        type="number"
+                        value={protectionOptions.integerUpper}
+                        onChange={(e) => updateProtection('integerUpper', parseInt(e.target.value) || 100)}
+                        className="bg-background/50"
+                      />
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+
+              {/* Code Transformations */}
+              <AccordionItem value="transformations" className="border border-border/50 rounded-lg px-4">
+                <AccordionTrigger className="hover:no-underline">
+                  <span>Biến đổi mã nguồn</span>
+                </AccordionTrigger>
+                <AccordionContent className="space-y-3 pt-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm text-muted-foreground">Xóa câu lệnh Debugger</Label>
+                    <Switch
+                      checked={protectionOptions.debuggerRemoval}
+                      onCheckedChange={(v) => updateProtection('debuggerRemoval', v)}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm text-muted-foreground">Trích xuất String Literal</Label>
+                    <Switch
+                      checked={protectionOptions.stringExtraction}
+                      onCheckedChange={(v) => updateProtection('stringExtraction', v)}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm text-muted-foreground">Chuyển hướng Property</Label>
+                    <Switch
+                      checked={protectionOptions.propertyIndirection}
+                      onCheckedChange={(v) => updateProtection('propertyIndirection', v)}
+                    />
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+
+              {/* Name Mangling */}
+              <AccordionItem value="mangling" className="border border-border/50 rounded-lg px-4">
+                <AccordionTrigger className="hover:no-underline">
+                  <div className="flex items-center justify-between w-full pr-4">
+                    <span>Xáo trộn tên biến cục bộ</span>
+                    <Switch
+                      checked={protectionOptions.localNameMangling}
+                      onCheckedChange={(v) => updateProtection('localNameMangling', v)}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="space-y-3 pt-2">
+                  <div className="space-y-2">
+                    <Label className="text-sm text-muted-foreground">Kiểu xáo trộn</Label>
+                    <Select value={protectionOptions.manglingType} onValueChange={(v: any) => updateProtection('manglingType', v)}>
+                      <SelectTrigger className="bg-background/50">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="sequential">Tuần tự (Sequential)</SelectItem>
+                        <SelectItem value="hexadecimal">Thập lục phân (Hexadecimal)</SelectItem>
+                        <SelectItem value="base52">Base52</SelectItem>
+                        <SelectItem value="base62">Base62</SelectItem>
+                        <SelectItem value="runic">Chữ Runic</SelectItem>
+                        <SelectItem value="glagolitic">Chữ Glagolitic</SelectItem>
+                        <SelectItem value="tifinagh">Chữ Tifinagh</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+
+              {/* Control Flow */}
+              <AccordionItem value="controlflow" className="border border-border/50 rounded-lg px-4">
+                <AccordionTrigger className="hover:no-underline">
+                  <div className="flex items-center justify-between w-full pr-4">
+                    <span>Bảo vệ luồng điều khiển</span>
+                    <Switch
+                      checked={protectionOptions.controlFlowProtection}
+                      onCheckedChange={(v) => updateProtection('controlFlowProtection', v)}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="space-y-3 pt-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm text-muted-foreground">Ngẫu nhiên hóa</Label>
+                    <Switch
+                      checked={protectionOptions.controlFlowRandomize}
+                      onCheckedChange={(v) => updateProtection('controlFlowRandomize', v)}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm text-muted-foreground">Làm rối đối số hằng số</Label>
+                    <Switch
+                      checked={protectionOptions.constantArgumentObfuscation}
+                      onCheckedChange={(v) => updateProtection('constantArgumentObfuscation', v)}
+                    />
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+
+              {/* Domain Lock */}
+              <AccordionItem value="domain" className="border border-border/50 rounded-lg px-4">
+                <AccordionTrigger className="hover:no-underline">
+                  <div className="flex items-center justify-between w-full pr-4">
+                    <span>Khóa theo tên miền</span>
+                    <Switch
+                      checked={protectionOptions.domainLock}
+                      onCheckedChange={(v) => updateProtection('domainLock', v)}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="space-y-3 pt-2">
+                  <div className="space-y-2">
+                    <Label className="text-sm text-muted-foreground">Mẫu tên miền (Domain Pattern)</Label>
+                    <Input
+                      value={protectionOptions.domainPattern}
+                      onChange={(e) => updateProtection('domainPattern', e.target.value)}
+                      placeholder="example.com, *.example.com"
+                      className="bg-background/50"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-sm text-muted-foreground">Script lỗi</Label>
+                    <Textarea
+                      value={protectionOptions.domainErrorScript}
+                      onChange={(e) => updateProtection('domainErrorScript', e.target.value)}
+                      placeholder="alert('Unauthorized domain!');"
+                      className="bg-background/50 min-h-[60px]"
+                    />
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+
+              {/* Function Reordering */}
+              <AccordionItem value="function" className="border border-border/50 rounded-lg px-4">
+                <AccordionTrigger className="hover:no-underline">
+                  <div className="flex items-center justify-between w-full pr-4">
+                    <span>Sắp xếp lại hàm</span>
+                    <Switch
+                      checked={protectionOptions.functionReordering}
+                      onCheckedChange={(v) => updateProtection('functionReordering', v)}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="space-y-3 pt-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm text-muted-foreground">Ngẫu nhiên hóa</Label>
+                    <Switch
+                      checked={protectionOptions.functionRandomize}
+                      onCheckedChange={(v) => updateProtection('functionRandomize', v)}
+                    />
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+
+              {/* Advanced Obfuscation */}
+              <AccordionItem value="advanced" className="border border-border/50 rounded-lg px-4">
+                <AccordionTrigger className="hover:no-underline">
+                  <span>Làm rối nâng cao</span>
+                </AccordionTrigger>
+                <AccordionContent className="space-y-3 pt-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm text-muted-foreground">Property Sparsing</Label>
+                    <Switch
+                      checked={protectionOptions.propertySparsing}
+                      onCheckedChange={(v) => updateProtection('propertySparsing', v)}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm text-muted-foreground">Nhóm biến (Variable Grouping)</Label>
+                    <Switch
+                      checked={protectionOptions.variableGrouping}
+                      onCheckedChange={(v) => updateProtection('variableGrouping', v)}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm text-muted-foreground">Làm rối biểu thức chuỗi</Label>
+                    <Switch
+                      checked={protectionOptions.expressionSequence}
+                      onCheckedChange={(v) => updateProtection('expressionSequence', v)}
+                    />
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+
+              {/* Self-Defending */}
+              <AccordionItem value="selfdefending" className="border border-border/50 rounded-lg px-4">
+                <AccordionTrigger className="hover:no-underline">
+                  <div className="flex items-center justify-between w-full pr-4">
+                    <span>Bảo vệ tự thân (Self-Defending)</span>
+                    <Switch
+                      checked={protectionOptions.selfDefending}
+                      onCheckedChange={(v) => updateProtection('selfDefending', v)}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="space-y-4 pt-2">
+                  <div className="space-y-2">
+                    <Label className="text-sm text-muted-foreground">Mức độ: {protectionOptions.selfDefendingLevel}</Label>
+                    <Slider
+                      value={[protectionOptions.selfDefendingLevel]}
+                      onValueChange={(v) => updateProtection('selfDefendingLevel', v[0])}
+                      min={1}
+                      max={5}
+                      step={1}
+                      className="w-full"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-sm text-muted-foreground">Script lỗi</Label>
+                    <Textarea
+                      value={protectionOptions.selfDefendingErrorScript}
+                      onChange={(e) => updateProtection('selfDefendingErrorScript', e.target.value)}
+                      placeholder="while(true){}"
+                      className="bg-background/50 min-h-[60px]"
+                    />
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+
+              {/* Date Lock */}
+              <AccordionItem value="datelock" className="border border-border/50 rounded-lg px-4">
+                <AccordionTrigger className="hover:no-underline">
+                  <div className="flex items-center justify-between w-full pr-4">
+                    <span>Khóa theo ngày</span>
+                    <Switch
+                      checked={protectionOptions.dateLock}
+                      onCheckedChange={(v) => updateProtection('dateLock', v)}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="space-y-4 pt-2">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label className="text-sm text-muted-foreground">Ngày bắt đầu</Label>
+                      <Input
+                        type="date"
+                        value={protectionOptions.startDate}
+                        onChange={(e) => updateProtection('startDate', e.target.value)}
+                        className="bg-background/50"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-sm text-muted-foreground">Ngày kết thúc</Label>
+                      <Input
+                        type="date"
+                        value={protectionOptions.endDate}
+                        onChange={(e) => updateProtection('endDate', e.target.value)}
+                        className="bg-background/50"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-sm text-muted-foreground">Script lỗi</Label>
+                    <Textarea
+                      value={protectionOptions.dateErrorScript}
+                      onChange={(e) => updateProtection('dateErrorScript', e.target.value)}
+                      placeholder="alert('Script expired!');"
+                      className="bg-background/50 min-h-[60px]"
+                    />
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+
+              {/* Console & DevTools */}
+              <AccordionItem value="console" className="border border-border/50 rounded-lg px-4">
+                <AccordionTrigger className="hover:no-underline">
+                  <span>Console & DevTools</span>
+                </AccordionTrigger>
+                <AccordionContent className="space-y-4 pt-2">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-sm text-muted-foreground">Ẩn Console (Console Cloaking)</Label>
+                      <Switch
+                        checked={protectionOptions.consoleCloaking}
+                        onCheckedChange={(v) => updateProtection('consoleCloaking', v)}
+                      />
+                    </div>
+                    {protectionOptions.consoleCloaking && (
+                      <div className="space-y-2">
+                        <Label className="text-sm text-muted-foreground">Loại trừ</Label>
+                        <Input
+                          value={protectionOptions.consoleCloakingExclude}
+                          onChange={(e) => updateProtection('consoleCloakingExclude', e.target.value)}
+                          placeholder="log, warn"
+                          className="bg-background/50"
+                        />
+                      </div>
+                    )}
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <Label className="text-sm text-muted-foreground">Chặn DevTools</Label>
+                      <Switch
+                        checked={protectionOptions.devToolsBlocking}
+                        onCheckedChange={(v) => updateProtection('devToolsBlocking', v)}
+                      />
+                    </div>
+                    {protectionOptions.devToolsBlocking && (
+                      <div className="space-y-2">
+                        <Label className="text-sm text-muted-foreground">Độ kiên nhẫn (giây): {protectionOptions.devToolsPatience}</Label>
+                        <Slider
+                          value={[protectionOptions.devToolsPatience]}
+                          onValueChange={(v) => updateProtection('devToolsPatience', v[0])}
+                          min={1}
+                          max={30}
+                          step={1}
+                          className="w-full"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+
+              {/* Global Object Hiding */}
+              <AccordionItem value="global" className="border border-border/50 rounded-lg px-4">
+                <AccordionTrigger className="hover:no-underline">
+                  <div className="flex items-center justify-between w-full pr-4">
+                    <span>Ẩn đối tượng toàn cục</span>
+                    <Switch
+                      checked={protectionOptions.globalObjectHiding}
+                      onCheckedChange={(v) => updateProtection('globalObjectHiding', v)}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </div>
+                </AccordionTrigger>
+                <AccordionContent className="space-y-4 pt-2">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm text-muted-foreground">Sử dụng định nghĩa sẵn</Label>
+                    <Switch
+                      checked={protectionOptions.globalUsePredefined}
+                      onCheckedChange={(v) => updateProtection('globalUsePredefined', v)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-sm text-muted-foreground">Bao gồm (Include)</Label>
+                    <Input
+                      value={protectionOptions.globalInclude}
+                      onChange={(e) => updateProtection('globalInclude', e.target.value)}
+                      placeholder="myGlobal, anotherGlobal"
+                      className="bg-background/50"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-sm text-muted-foreground">Loại trừ (Exclude)</Label>
+                    <Input
+                      value={protectionOptions.globalExclude}
+                      onChange={(e) => updateProtection('globalExclude', e.target.value)}
+                      placeholder="jQuery, $"
+                      className="bg-background/50"
+                    />
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </CardContent>
         </Card>
 
