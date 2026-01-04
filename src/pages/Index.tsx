@@ -153,7 +153,7 @@ const Index = () => {
                 <User className="w-4 h-4 text-primary" />
                 <span className="text-sm font-medium text-primary">{t.author}</span>
                 <Heart className="w-4 h-4 text-red-500 fill-red-500" />
-                <span className="text-sm text-muted-foreground">like.1</span>
+                <span className="text-sm text-muted-foreground">Like.1</span>
               </div>
               
               {/* Language Selector */}
