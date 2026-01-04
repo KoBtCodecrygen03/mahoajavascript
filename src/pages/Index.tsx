@@ -10,49 +10,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Slider } from "@/components/ui/slider";
 import { toast } from "sonner";
-import { obfuscateCode, generateTampermonkeyHeader, type ObfuscationMethod } from "@/lib/obfuscator";
+import { obfuscateCode, generateTampermonkeyHeader, generateTampermonkeyFooter, type ObfuscationMethod, type ProtectionOptions } from "@/lib/obfuscator";
 import { Copy, Shield, Code, Zap, Lock, FileCode, Wand2, Settings2, ChevronDown } from "lucide-react";
 
-interface ProtectionOptions {
-  booleanLiteralReplacement: boolean;
-  booleanRandomize: boolean;
-  integerLiteralReplacement: boolean;
-  integerRandomize: boolean;
-  integerRadix: 'none' | 'binary' | 'decimal' | 'hexadecimal' | 'octal';
-  integerLower: number;
-  integerUpper: number;
-  debuggerRemoval: boolean;
-  stringExtraction: boolean;
-  propertyIndirection: boolean;
-  localNameMangling: boolean;
-  manglingType: 'sequential' | 'hexadecimal' | 'base52' | 'base62' | 'runic' | 'glagolitic' | 'tifinagh';
-  controlFlowProtection: boolean;
-  controlFlowRandomize: boolean;
-  constantArgumentObfuscation: boolean;
-  domainLock: boolean;
-  domainPattern: string;
-  domainErrorScript: string;
-  functionReordering: boolean;
-  functionRandomize: boolean;
-  propertySparsing: boolean;
-  variableGrouping: boolean;
-  expressionSequence: boolean;
-  selfDefending: boolean;
-  selfDefendingLevel: number;
-  selfDefendingErrorScript: string;
-  dateLock: boolean;
-  startDate: string;
-  endDate: string;
-  dateErrorScript: string;
-  consoleCloaking: boolean;
-  consoleCloakingExclude: string;
-  devToolsBlocking: boolean;
-  devToolsPatience: number;
-  globalObjectHiding: boolean;
-  globalUsePredefined: boolean;
-  globalInclude: string;
-  globalExclude: string;
-}
+// ProtectionOptions is imported from obfuscator.ts
 
 const defaultProtectionOptions: ProtectionOptions = {
   booleanLiteralReplacement: false,
@@ -116,16 +77,19 @@ const Index = () => {
     }
 
     try {
-      let result = obfuscateCode(inputCode, method);
+      // Apply obfuscation with protection options
+      let result = obfuscateCode(inputCode, method, protectionOptions);
       
       if (includeTampermonkey) {
         const header = generateTampermonkeyHeader(scriptName, scriptDescription, matchPattern);
-        result = header + result;
+        const footer = generateTampermonkeyFooter();
+        result = header + result + footer;
       }
       
       setOutputCode(result);
       toast.success("Mã hóa thành công!");
     } catch (error) {
+      console.error("Obfuscation error:", error);
       toast.error("Có lỗi xảy ra khi mã hóa!");
     }
   };
