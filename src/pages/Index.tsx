@@ -12,7 +12,7 @@ import { Slider } from "@/components/ui/slider";
 import { toast } from "sonner";
 import { obfuscateCode, generateTampermonkeyHeader, generateTampermonkeyFooter, type ObfuscationMethod, type ProtectionOptions } from "@/lib/obfuscator";
 import { translations, type Language } from "@/lib/translations";
-import { Copy, Shield, Code, Zap, Lock, FileCode, Wand2, Settings2, Globe, Heart, User } from "lucide-react";
+import { Copy, Shield, Code, Zap, Lock, FileCode, Wand2, Settings2, Globe, User } from "lucide-react";
 
 const defaultProtectionOptions: ProtectionOptions = {
   booleanLiteralReplacement: false,
@@ -74,6 +74,15 @@ const Index = () => {
   const [language, setLanguage] = useState<Language>('vi');
 
   const t = translations[language];
+  const protectionHeading: Record<Language, string> = {
+    vi: 'Bảo vệ nâng cao',
+    en: 'Advanced Protection',
+    zh: '高级保护',
+    ja: '高度な保護',
+    ko: '고급 보호',
+    es: 'Protección avanzada',
+    fr: 'Protection avancée',
+  };
 
   const updateProtection = <K extends keyof ProtectionOptions>(key: K, value: ProtectionOptions[K]) => {
     setProtectionOptions(prev => ({ ...prev, [key]: value }));
@@ -132,28 +141,26 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+    <div className="studio-shell min-h-screen bg-background text-foreground">
       {/* Header */}
-      <header className="border-b border-border/50 backdrop-blur-sm sticky top-0 z-50 bg-background/80">
+      <header className="studio-header border-b border-border/70 backdrop-blur-md sticky top-0 z-50 bg-background/90">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-primary/10 text-primary">
+              <div className="studio-mark p-2 rounded-lg bg-primary/10 text-primary">
                 <Shield className="w-6 h-6" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-foreground">{t.title}</h1>
+                <h1 className="text-xl font-semibold text-foreground">{t.title}</h1>
                 <p className="text-xs text-muted-foreground">{t.subtitle}</p>
               </div>
             </div>
             
             <div className="flex items-center gap-4">
               {/* Author Info */}
-              <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20">
+              <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-card/80 border border-border">
                 <User className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium text-primary">{t.author}</span>
-                <Heart className="w-4 h-4 text-red-500 fill-red-500" />
-                <span className="text-sm text-muted-foreground">Like.1</span>
+                <span className="text-sm font-medium text-foreground">{t.author}</span>
               </div>
               
               {/* Language Selector */}
@@ -167,6 +174,10 @@ const Index = () => {
                     <SelectItem value="vi">🇻🇳 Tiếng Việt</SelectItem>
                     <SelectItem value="en">🇺🇸 English</SelectItem>
                     <SelectItem value="zh">🇨🇳 中文</SelectItem>
+                    <SelectItem value="ja">🇯🇵 日本語</SelectItem>
+                    <SelectItem value="ko">🇰🇷 한국어</SelectItem>
+                    <SelectItem value="es">🇪🇸 Español</SelectItem>
+                    <SelectItem value="fr">🇫🇷 Français</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -177,22 +188,20 @@ const Index = () => {
 
       <main className="container mx-auto px-4 py-8">
         {/* Author Mobile */}
-        <div className="md:hidden flex items-center justify-center gap-2 mb-4 px-3 py-2 rounded-full bg-primary/10 border border-primary/20">
+        <div className="md:hidden flex items-center justify-center gap-2 mb-4 px-3 py-2 rounded-full bg-card/80 border border-border">
           <User className="w-4 h-4 text-primary" />
-          <span className="text-sm font-medium text-primary">{t.author}</span>
-          <Heart className="w-4 h-4 text-red-500 fill-red-500" />
-          <span className="text-sm text-muted-foreground">like.1</span>
+          <span className="text-sm font-medium text-foreground">{t.author}</span>
         </div>
 
         {/* Features Banner */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {[
-            { icon: Lock, label: t.highSecurity, color: "text-emerald-500" },
-            { icon: Zap, label: t.fastProcessing, color: "text-amber-500" },
-            { icon: Code, label: t.manyAlgorithms, color: "text-blue-500" },
-            { icon: FileCode, label: t.tampermonkeySupport, color: "text-purple-500" },
+            { icon: Lock, label: t.highSecurity, color: "text-primary" },
+            { icon: Zap, label: t.fastProcessing, color: "text-secondary" },
+            { icon: Code, label: t.manyAlgorithms, color: "text-accent" },
+            { icon: FileCode, label: t.tampermonkeySupport, color: "text-destructive" },
           ].map((feature, i) => (
-            <Card key={i} className="bg-card/50 backdrop-blur border-border/50 hover:border-primary/30 transition-colors">
+            <Card key={i} className="studio-card bg-card/80 backdrop-blur border-border/70 hover:border-primary/40 transition-colors">
               <CardContent className="p-4 flex items-center gap-3">
                 <feature.icon className={`w-5 h-5 ${feature.color}`} />
                 <span className="text-sm font-medium text-foreground">{feature.label}</span>
@@ -203,7 +212,7 @@ const Index = () => {
 
         <div className="grid lg:grid-cols-2 gap-6">
           {/* Input Section */}
-          <Card className="bg-card/80 backdrop-blur border-border/50">
+          <Card className="studio-card bg-card/90 backdrop-blur border-border/70">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-foreground">
                 <Code className="w-5 h-5 text-primary" />
@@ -270,7 +279,7 @@ const Index = () => {
           </Card>
 
           {/* Output Section */}
-          <Card className="bg-card/80 backdrop-blur border-border/50">
+          <Card className="studio-card bg-card/90 backdrop-blur border-border/70">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-foreground">
                 <Shield className="w-5 h-5 text-primary" />
@@ -302,7 +311,7 @@ const Index = () => {
         </div>
 
         {/* Method Selection & Actions */}
-        <Card className="mt-6 bg-card/80 backdrop-blur border-border/50">
+        <Card className="studio-card mt-6 bg-card/90 backdrop-blur border-border/70">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-foreground">
               <Wand2 className="w-5 h-5 text-primary" />
@@ -384,7 +393,7 @@ const Index = () => {
         </Card>
 
         {/* Protection Options */}
-        <Card className="mt-6 bg-card/80 backdrop-blur border-border/50">
+        <Card className="studio-card mt-6 bg-card/90 backdrop-blur border-border/70">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-foreground">
               <Settings2 className="w-5 h-5 text-primary" />
@@ -833,9 +842,7 @@ const Index = () => {
                 <AccordionTrigger className="hover:no-underline">
                   <div className="flex items-center gap-2">
                     <Shield className="w-4 h-4 text-primary" />
-                    <span className="text-primary font-medium">
-                      {language === 'vi' ? 'Bảo vệ nâng cao mới' : language === 'en' ? 'New Advanced Protection' : '新高级保护'}
-                    </span>
+                    <span className="text-primary font-medium">{protectionHeading[language]}</span>
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="space-y-4 pt-2">
@@ -907,7 +914,7 @@ const Index = () => {
 
         {/* Info Section */}
         <div className="mt-8 grid md:grid-cols-2 gap-6">
-          <Card className="bg-card/50 border-border/50">
+          <Card className="studio-card bg-card/80 border-border/70">
             <CardHeader>
               <CardTitle className="text-lg text-foreground">{t.howToUse}</CardTitle>
             </CardHeader>
@@ -919,7 +926,7 @@ const Index = () => {
             </CardContent>
           </Card>
           
-          <Card className="bg-card/50 border-border/50">
+          <Card className="studio-card bg-card/80 border-border/70">
             <CardHeader>
               <CardTitle className="text-lg text-foreground">{t.importantNotes}</CardTitle>
             </CardHeader>
@@ -937,7 +944,7 @@ const Index = () => {
       <footer className="border-t border-border/50 mt-12">
         <div className="container mx-auto px-4 py-6 text-center text-sm text-muted-foreground">
           <p>{t.footerText}</p>
-          <p className="mt-2 text-primary font-medium">{t.author} • like.1</p>
+          <p className="mt-2 text-primary font-medium">{t.author}</p>
         </div>
       </footer>
     </div>
