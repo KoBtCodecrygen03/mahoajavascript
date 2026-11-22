@@ -1,0 +1,1 @@
+- Keep localization in `src/lib/translations.ts`; new locales may inherit English defaults while overriding translated labels, so all UI strings remain in one typed catalog.

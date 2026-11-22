@@ -165,9 +165,9 @@ const Index = () => {
               
               {/* Language Selector */}
               <div className="flex items-center gap-2">
-                <Globe className="w-4 h-4 text-muted-foreground" />
+                <Globe className="hidden sm:block w-4 h-4 text-muted-foreground" />
                 <Select value={language} onValueChange={(v) => setLanguage(v as Language)}>
-                  <SelectTrigger className="w-[100px] h-8 bg-background/50">
+                  <SelectTrigger className="w-[140px] sm:w-[164px] h-9 bg-background/70">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
